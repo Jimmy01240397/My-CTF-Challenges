@@ -18,7 +18,7 @@ DnSpy 打開 `ShootingGame_Data\Managed\Assembly-CSharp.dll` 會發現有一些 
 
 ![image](https://github.com/Jimmy01240397/My-CTF-Challenges/assets/57281249/e19af70d-a9c9-4e8e-a955-aa58db05ad20)
 
-通過與 `gun`、`enemy` 等等 Class 比對後，除了 `GameManager` 是送入一個字串 Call `Transfer.exec` 以後會依據 Call 完後所得到的 value variable 轉成 Boolean 並判斷如果為 True 就把 `supermode` 設為 True，觀察 `gun` class 會發現 `supermode` 會讓玩家進入無敵狀態並沒有攻擊速度限制，應該是一個打入作弊代碼會開啟作弊模式的東西。其他 Call `Transfer.exec` 的地方都是在做字串比對，可以判斷 `Transfer.exec` 會依據 `code` 跟 `magic` 運算後的 byte array 做相應的事情，但是 `Transfer.exec` 到底做了甚麼還不清楚，同時因為只有 `GameManager` 不是字串比對，所以目標可能在這裡，猜測那個作弊代碼可能就是 flag。
+通過與 `gun`、`enemy` 等等 Class 比對後，發現 `GameManager` 是送入一個字串 Call `Transfer.exec` 以後會依據 Call 完後所得到的 value variable 轉成 Boolean 並判斷如果為 True 就把 `supermode` 設為 True，觀察 `gun` class 會發現 `supermode` 會讓玩家進入無敵狀態並沒有攻擊速度限制，應該是一個打入作弊代碼會開啟作弊模式的東西。其他 Call `Transfer.exec` 的地方都是在做字串比對，可以判斷 `Transfer.exec` 會依據 `code` 跟 `magic` 運算後的 byte array 做相應的事情，但是 `Transfer.exec` 到底做了甚麼還不清楚，同時因為只有 `GameManager` 不是字串比對，所以目標可能在這裡，猜測那個作弊代碼可能就是 flag。
 
 ![image](https://github.com/Jimmy01240397/My-CTF-Challenges/assets/57281249/b32993fd-a56a-4923-a9a8-96d1783c6da2)
 
