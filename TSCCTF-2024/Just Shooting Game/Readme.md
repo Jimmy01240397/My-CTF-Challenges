@@ -64,7 +64,7 @@ DnSpy 打開 `ShootingGame_Data\Managed\Assembly-CSharp.dll` 會發現有一些 
 
 用 python 寫 [unicodetoemoji.py](exploit/unicodetoemoji.py) 跟 [emojitobyte.py](exploit/emojitobyte.py) 把他解成 bytecode 並存成檔案。
 
-接著把解出來的 bytecode 丟 IDA 用 x64 解看看，我們會拿到這坨。
+接著把解出來的 bytecode 丟 Disassembler 的工具，這邊要猜一下是哪種指令集，這個 [Online-Assembler-and-Disassembler](https://shell-storm.org/online/Online-Assembler-and-Disassembler) 網站不錯用，或者直接 IDA 用 x64 解看看，我們會拿到這坨。
 
 ![image](https://github.com/Jimmy01240397/My-CTF-Challenges/assets/57281249/3f9e5b21-2d7e-416f-8efa-bd5c123e9ce0)
 
