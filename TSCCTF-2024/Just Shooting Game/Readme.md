@@ -1,4 +1,7 @@
 # Just Shooting Game
+
+![image](https://github.com/Jimmy01240397/My-CTF-Challenges/assets/57281249/0137c941-cfd6-41f6-a329-52e6cfdff2de)
+
 基本上這題最大的難點有兩個：
 1. 取得 magic 值
 2. ~~通靈出~~ Transfer.exec 是某種 bytecode interpreter ，然後把解出來的 code 丟 IDA 之類的解析。
