@@ -33,7 +33,7 @@ DnSpy 打開 `ShootingGame_Data\Managed\Assembly-CSharp.dll` 會發現有一些 
 
 ![image](https://github.com/Jimmy01240397/My-CTF-Challenges/assets/57281249/40c38580-272d-409c-bdea-67a283cdbd8c)
 
-解析 `Transfer.exec` 可以發現他的參數變數名稱有 `code`、`mem`、`sp`、`bp` 等等疑似 assembly 的東西，但是因為他太長了要猜一下，直接整個 function 丟給 chatgpt 判斷一下，我是用 GPT4，但是 GPT 3.5 也可以，只是要分段送。
+解析 `Transfer.exec` 可以發現他的參數變數名稱有 `code`、`mem`、`sp`、`bp` 等等疑似 memory、CPU register 的東西，但是因為他太長了要猜一下，直接整個 function 丟給 chatgpt 判斷一下，我是用 GPT4，但是 GPT 3.5 也可以，只是要分段送。
 
 ![image](https://github.com/Jimmy01240397/My-CTF-Challenges/assets/57281249/c0f4cc85-2eb4-4785-858a-00edb41203a2)
 
