@@ -19,7 +19,7 @@ RUN mv /app/readflag /readflag && \
     chown root:root /fl4g1337 && \
     chmod 400 /fl4g1337 && \
     useradd -m -s /bin/bash app && \
-    chown app:app /app
+    chown -R app:app /app
 
 USER app
 WORKDIR /app

@@ -1,1 +1,60 @@
-test
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="/base.css">
+<title>Capoost</title>
+</head>
+<body>
+    <h2>Welcome to Capoost</h2>
+    <button onclick="location.href='/postcreate.html'">Create New Post</button>
+    <button onclick="logout()">Logout</button>
+    <h3>Posts</h3>
+    <ul id="postsList"></ul>
+
+    <script>
+        // Fetch current user info and display
+        fetch('/user/')
+        .then(response => {
+            if (response.status === 401) {
+                window.location.href = '/login.html';
+            }
+            return response.json()
+        })
+        .then(user => {
+            if (user && user.username) {
+                if (user.isadmin) {
+                    window.location.href = '/admin.html';
+                }
+                const welcomeMsg = document.createElement('p');
+                welcomeMsg.textContent = `Logged in as ${user.username}`;
+                document.body.insertBefore(welcomeMsg, document.querySelector('h3'));
+            }
+        });
+
+        // Fetch and display posts
+        fetch('/post/list')
+        .then(response => response.json())
+        .then(posts => {
+            const postsList = document.getElementById('postsList');
+            posts.forEach(post => {
+                const li = document.createElement('li');
+                li.textContent = `${post.title} by ${post.owner}`;
+                li.style.cursor = 'pointer';
+                li.onclick = () => { window.location.href = `/post.html?id=${post.id}`; };
+                postsList.appendChild(li);
+            });
+        });
+
+        function logout() {
+            // Placeholder for actual logout functionality
+            fetch('/user/logout').then(response => response.text())
+            .then(msg => {
+                console.log(msg);
+            });
+            window.location.href = '/login.html';
+        }
+    </script>
+</body>
+</html>

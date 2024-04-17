@@ -14,6 +14,7 @@ func Init(r *gin.RouterGroup) {
     router = r
     router.POST("/login", login)
     router.GET("/", auth.CheckSignIn, getuser)
+    router.GET("/logout", auth.CheckSignIn, logout)
 }
 
 type userresult struct {
@@ -45,4 +46,12 @@ func login(c *gin.Context) {
     session.Set("user", userdata.Username)
     session.Save()
     c.String(200, "Login success")
+}
+
+func logout(c *gin.Context) {
+    session := sessions.Default(c)
+    session.Clear()
+    session.Options(sessions.Options{MaxAge: -1})
+    session.Save()
+    c.String(200, "Logout success")
 }

@@ -27,7 +27,7 @@ type Post struct {
 type postjson struct {
     ID uint `json:"id"`
     Title string `json:"title"`
-    Owner string `json: owner`
+    Owner string `json:"owner"`
     Template string `json:"template"`
     Data PostDataMap `json:"data"`
     Count int `json:"count"`

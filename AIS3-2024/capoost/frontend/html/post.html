@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="/base.css">
+<title>Capoost</title>
+</head>
+<body>
+    <h2>Post Details</h2>
+    <div id="postContent"></div>
+    <button onclick="goBack()">Back to Home</button>
+
+    <script>
+        fetch('/user/')
+        .then(response => {
+            if (response.status === 401) {
+                window.location.href = '/login.html';
+            }
+        });
+        // Parse the URL to get the post ID
+        const queryParams = new URLSearchParams(window.location.search);
+        const postId = queryParams.get('id');
+
+        // Fetch post details and display
+        fetch(`/post/read?id=${postId}`)
+        .then(response => response.json())
+        .then(post => {
+            const postDiv = document.getElementById('postContent');
+            if (!post || !post.data) {
+                postDiv.innerHTML = '<p>Post not found.</p>';
+                return;
+            }
+            postDiv.innerHTML = `
+                <p>${post.data}</p>
+                <p><strong>Views:</strong> ${post.count}</p>
+                <p><strong>Popularity:</strong> ${post.percent}%</p>
+            `;
+        })
+        .catch(error => {
+            console.error('Error loading post:', error);
+            document.getElementById('postContent').innerHTML = '<p>Error loading post details.</p>';
+        });
+
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</body>
+</html>

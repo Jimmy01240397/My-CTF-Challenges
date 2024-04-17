@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="/base.css">
+<title>Capoost</title>
+</head>
+<body>
+    <h2>Create New Post</h2>
+    <form id="createPostForm">
+        <label for="title">Title:</label>
+        <input type="text" id="title" required>
+        <p><p>
+        <label for="templateSelect">Template:</label>
+        <select id="templateSelect" required onchange="updateTemplateFields()">
+            <option value="">Select a Template</option>
+        </select>
+        
+        <p><p>
+
+        <div id="templateContent"></div>
+
+        <p><p>
+
+        <div id="templateData"></div>
+
+        <button type="submit">Create Post</button>
+    </form>
+    <p><p>
+    <button onclick="window.location.href = '/'">Back to Home</button>
+
+    <script>
+        fetch('/user/')
+        .then(response => {
+            if (response.status === 401) {
+                window.location.href = '/login.html';
+            }
+        });
+        document.getElementById('createPostForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const title = document.getElementById('title').value;
+            const template = document.getElementById('templateSelect').value;
+            const data = {};
+            
+            // Gather data from dynamic inputs
+            const inputs = document.querySelectorAll('#templateData input');
+            inputs.forEach(input => {
+                data[input.name] = input.value;
+            });
+
+            fetch('/post/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, template, data })
+            })
+            .then(response => {
+                if (response.status === 200) {
+                    window.location.href = '/'
+                }
+            })
+        });
+
+        // Fetch templates and populate the select dropdown
+        fetch('/template/list')
+        .then(response => response.json())
+        .then(templates => {
+            const select = document.getElementById('templateSelect');
+            templates.forEach(template => {
+                const option = document.createElement('option');
+                option.value = template;
+                option.textContent = template;
+                select.appendChild(option);
+            });
+        });
+
+        // Function to dynamically create input fields based on selected template
+        function updateTemplateFields() {
+            const selectedTemplate = document.getElementById('templateSelect').value;
+            const dataDiv = document.getElementById('templateData');
+            const templateDiv = document.getElementById('templateContent');
+            dataDiv.innerHTML = ''; // Clear previous inputs
+            templateDiv.innerHTML = '';
+
+            if (selectedTemplate) {
+                fetch(`/template/read?name=${selectedTemplate}`)
+                .then(response => response.text())
+                .then(template => {
+                    templateDiv.innerHTML = template.replaceAll('\n', '\n<p></p>\n');
+                    const placeholders = template.match(/\{\{ \.(.*?) \}\}/g) || [];
+                    placeholders.forEach(placeholder => {
+                        const key = placeholder.replace(/\{\{ \.|\ }\}/g, '').trim();
+                        const label = document.createElement('label');
+                        label.textContent = key + ':';
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.name = key;
+                        dataDiv.appendChild(label);
+                        dataDiv.appendChild(input);
+                        dataDiv.appendChild(document.createElement('p'));
+                    });
+                });
+            }
+        }
+    </script>
+</body>
+</html>
