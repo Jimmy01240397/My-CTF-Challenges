@@ -32,7 +32,7 @@
                 return;
             }
             postDiv.innerHTML = `
-                <p>${post.data}</p>
+                <p>${post.data.replaceAll('\n', '\n<p></p>\n')}</p>
                 <p><strong>Views:</strong> ${post.count}</p>
                 <p><strong>Popularity:</strong> ${post.percent}%</p>
             `;

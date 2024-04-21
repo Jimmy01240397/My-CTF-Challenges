@@ -58,5 +58,13 @@ func read(c *gin.Context) {
         })
         return
     }
-    c.File(path.Join("./template", name))
+    tmpl, err := os.ReadFile(path.Join("./template", name))
+    if err != nil {
+        errutil.AbortAndError(c, &errutil.Err{
+            Code: 400,
+            Msg: "Not exist",
+        })
+    }
+    c.Data(200, "text/plain", tmpl)
+    //c.File(path.Join("./template", name))
 }

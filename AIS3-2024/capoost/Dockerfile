@@ -4,7 +4,7 @@ RUN apt install make
 
 COPY . /src
 WORKDIR /src
-RUN make && make readflag
+RUN make clean && make && make readflag
 
 
 FROM debian:latest as release
@@ -18,6 +18,7 @@ RUN mv /app/readflag /readflag && \
     chmod 4555 /readflag && \
     chown root:root /fl4g1337 && \
     chmod 400 /fl4g1337 && \
+    mv /app/capoost /app/aebiaxxSJJpTWnkj && \
     useradd -m -s /bin/bash app && \
     chown -R app:app /app
 
@@ -26,4 +27,4 @@ WORKDIR /app
 
 RUN touch .env
 
-ENTRYPOINT ["./capoost"]
+ENTRYPOINT ["./aebiaxxSJJpTWnkj"]

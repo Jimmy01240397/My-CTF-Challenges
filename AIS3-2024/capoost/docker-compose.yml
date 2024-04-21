@@ -9,12 +9,13 @@ services:
     depends_on:
       - app
     ports:
-      - 8080:80
+      - ${PORT}:80
     networks:
       default:
       internal:
   app:
     build: .
+    image: capoost-app
     user: app
     environment:
     - PORT=8000
@@ -27,7 +28,7 @@ services:
     - DBPORT=5432
     depends_on:
     - db
-    entrypoint: "bash -c 'sleep 5 && ./capoost'"
+    entrypoint: "bash -c 'sleep 5 && ./aebiaxxSJJpTWnkj'"
     networks:
       internal:
   db:
@@ -41,5 +42,11 @@ services:
 
 networks:
   default:
+    ipam:
+      config:
+      - subnet: ${SUBNET0}
   internal:
+    ipam:
+      config:
+      - subnet: ${SUBNET1}
     internal: true
