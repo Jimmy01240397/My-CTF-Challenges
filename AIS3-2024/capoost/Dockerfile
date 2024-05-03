@@ -2,16 +2,18 @@ FROM golang:1.19 as builder
 
 RUN apt install make
 
-COPY . /src
+COPY src /src
 WORKDIR /src
 RUN make clean && make && make readflag
 
 
 FROM debian:latest as release
 
+LABEL maintainer="Chumy"
+
 COPY --from=builder /src/bin /app
-COPY template /app/template
-COPY fl4g1337 /fl4g1337
+COPY src/template /app/template
+COPY src/fl4g1337 /fl4g1337
 
 RUN mv /app/readflag /readflag && \
     chown root:root /readflag && \

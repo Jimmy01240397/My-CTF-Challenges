@@ -1,0 +1,7 @@
+version: '3'
+
+services:
+  meowwayserver:
+    build: ./
+    ports:
+    - 8741:8741
