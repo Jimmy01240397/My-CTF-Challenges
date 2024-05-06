@@ -1,0 +1,12 @@
+void init_openssl();
+void cleanup_openssl();
+SSL_CTX *create_context();
+void gadget();
+void leave();
+void log(const char *format, ...);
+void runcommand();
+void connectserver();
+void closeconnection();
+void readfile(char *file, char *data, int datalen);
+void sendtoserver(char *buf, int buflen);
+int main(int argc, char *argv[]);

@@ -7,5 +7,11 @@ services:
     - ./server/gadget.py:/server/gadget.py:ro
     - ./server/flag.txt:/server/flag.txt:ro
     build: ./
+    environment:
+    - ENABLE_ROTATE=false
+    - ENABLE_REG_RANDOMIZE=false
+    - ENABLE_CALC_RANDOMIZE=false
+    - ENABLE_FLAGTOCHECK_RANDOMIZE=false
+    - ENABLE_ORDER_RANDOMIZE=false
     ports:
     - 8741:8741

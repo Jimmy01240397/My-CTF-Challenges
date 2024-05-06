@@ -5,12 +5,17 @@
 #include <netdb.h>
 #include <fcntl.h>
 #include <string.h>
+#include <stdarg.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
+
+#include "main.h"
+#include "asciiart.h"
 
 #define HOST "capoost.chummydns.com"
 #define PORT 8741
 
+int debug;
 int socket_fd;
 SSL_CTX *ctx;
 SSL *ssl;
@@ -47,40 +52,50 @@ void leave() {
     );
 }
 
+void log(const char *format, ...) {
+    va_list args;
+    if (debug) {
+        va_start(args, format);
+        vprintf(format, args);
+        va_end(args);
+    }
+}
+
 void runcommand() {
+    int len;
     char command[0x2000];
-    if (SSL_read(ssl, command, sizeof(command)) < 0) {
-        close(socket_fd);
+    log("Read ROP chain from server...\n");
+    len = SSL_read(ssl, command, sizeof(command));
+    closeconnection();
+    if (len < 0) {
+        log("Error!!!!\n");
         exit(1);
     }
-    
-    SSL_free(ssl);
-    close(socket_fd);
-    SSL_CTX_free(ctx);
-    cleanup_openssl();
-
+    log("Start execute ROP chain...\n");
     __asm__(
         "ret\n\t"
     );
 }
 
-
-int main() {
+void connectserver() {
     struct hostent *he;
     struct in_addr *addr;
 
     if ((he = gethostbyname(HOST)) == NULL) {
-        return 1;
+        log("Error!!!!\n");
+        exit(1);
     }
     
     addr = ((struct in_addr **) he->h_addr_list)[0];
     if (!addr) {
-        return 1;
+        log("Error!!!!\n");
+        exit(1);
     }
 
     socket_fd = socket(PF_INET, SOCK_STREAM, 0);
     if (socket_fd < 0) {
-        return 1;
+        log("Error!!!!\n");
+        exit(1);
     }
     struct sockaddr_in serverAddr = {
         .sin_family = AF_INET,
@@ -89,94 +104,92 @@ int main() {
     };
     int len = sizeof(serverAddr);
     if (connect(socket_fd, (struct sockaddr *)&serverAddr, len) == -1) {
-        return 1;
+        log("Error!!!!\n");
+        exit(1);
     }
 
     init_openssl();
     ctx = create_context();
     if (!ctx) {
+        log("Error!!!!\n");
         close(socket_fd);
-        return 1;
+        exit(1);
     }
     ssl = SSL_new(ctx);
     SSL_set_fd(ssl, socket_fd);
 
     if (SSL_connect(ssl) == -1) {
-        SSL_free(ssl);
-        close(socket_fd);
-        SSL_CTX_free(ctx);
-        cleanup_openssl();
-        return 1;
+        log("Error!!!!\n");
+        closeconnection();
+        exit(1);
     }
+}
 
-    long long tmp = main;
-    if (SSL_write(ssl, &tmp, sizeof(tmp)) < 0) {
-        SSL_free(ssl);
-        close(socket_fd);
-        SSL_CTX_free(ctx);
-        cleanup_openssl();
-        return 1;
+void closeconnection() {
+    log("Close connection...\n");
+    SSL_free(ssl);
+    close(socket_fd);
+    SSL_CTX_free(ctx);
+    cleanup_openssl();
+}
+
+void readfile(char *file, char *data, int datalen) {
+    int fd = open(file, O_RDONLY);
+    if (fd < 0) {
+        log("Error!!!!\n");
+        exit(1);
     }
     
-    char readflag[0x100] = {0};
+    ssize_t result = read(fd, data, datalen);
+    if (result < 0) {
+        log("Error!!!!\n");
+        close(fd);
+        exit(1);
+    }
+    close(fd);
+}
+
+void sendtoserver(char *buf, int buflen) {
+    if (SSL_write(ssl, buf, buflen) < 0) {
+        log("Error!!!!\n");
+        closeconnection();
+        exit(1);
+    }
+}
+
+int main(int argc, char *argv[]) {
+    debug = argc > 1 && !strcmp(argv[1], "debug");
+    
+    char flag[0x100] = {0};
     char flagcheck[48];
     char checkdata[48];
+    if (debug) {
+        puts(asciiart);
+    }
     
-    int fd = open("flag.txt", O_RDONLY);
-    if (fd < 0) {
-        SSL_free(ssl);
-        close(socket_fd);
-        SSL_CTX_free(ctx);
-        cleanup_openssl();
-        return 1;
-    }
-    ssize_t result = read(fd, readflag, sizeof(readflag));
-    if (result < 0) {
-        SSL_free(ssl);
-        close(socket_fd);
-        SSL_CTX_free(ctx);
-        cleanup_openssl();
-        return 1;
-    }
-    close(fd);
+    log("Start read flag...\n");
+    readfile("flag.txt", flag, sizeof(flag));
+    log("Your flag: %s\n", flag);
+    log("Generate check data...\n");
+    readfile("/dev/urandom", checkdata, sizeof(checkdata));
 
-    fd = open("/dev/urandom", O_RDONLY);
-    if (fd < 0) {
-        SSL_free(ssl);
-        close(socket_fd);
-        SSL_CTX_free(ctx);
-        cleanup_openssl();
-        return 1;
-    }
-    result = read(fd, checkdata, sizeof(checkdata));
-    if (result < 0) {
-        SSL_free(ssl);
-        close(socket_fd);
-        SSL_CTX_free(ctx);
-        cleanup_openssl();
-        return 1;
-    }
-    close(fd);
+    log("Connect to server...\n");
+    connectserver();
 
+    log("Send main function address to server: %llx\n", main);
+    long long tmp = main;
+    sendtoserver(&tmp, sizeof(tmp));
+
+    log("Send check target array address to server: %llx\n", flagcheck);
     tmp = flagcheck;
-    if (SSL_write(ssl, &tmp, sizeof(tmp)) < 0) {
-        SSL_free(ssl);
-        close(socket_fd);
-        SSL_CTX_free(ctx);
-        cleanup_openssl();
-        return 1;
-    }
+    sendtoserver(&tmp, sizeof(tmp));
 
-    if (SSL_write(ssl, checkdata, sizeof(checkdata)) < 0) {
-        SSL_free(ssl);
-        close(socket_fd);
-        SSL_CTX_free(ctx);
-        cleanup_openssl();
-        return 1;
-    }
+    log("Send check data context to server...\n");
+    sendtoserver(checkdata, sizeof(checkdata));
 
     runcommand();
 
+    log("Start compare check target and check data...\n");
     return memcmp(flagcheck, checkdata, sizeof(checkdata));
 }
 

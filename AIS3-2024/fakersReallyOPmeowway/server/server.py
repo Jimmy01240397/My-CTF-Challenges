@@ -1,8 +1,31 @@
 import gadget
 import random
 import sys
+import os
+
+enable_rotate = os.environ.get("ENABLE_ROTATE", "true") != "false"
+enable_reg_randomize = os.environ.get("ENABLE_REG_RANDOMIZE", "true") != "false"
+enable_calc_randomize = os.environ.get("ENABLE_CALC_RANDOMIZE", "true") != "false"
+enable_flagtocheck_randomize = os.environ.get("ENABLE_FLAGTOCHECK_RANDOMIZE", "true") != "false"
+enable_order_randomize = os.environ.get("ENABLE_ORDER_RANDOMIZE", "true") != "false"
+
+
 
 socketmode = len(sys.argv) > 1 and sys.argv[1] == 'socket'
+
+regpool = [('addrrax', 'rax', 'eax', 'ax', 'ah', 'al'),
+           ('addrrbx', 'rbx', 'ebx', 'bx', 'bh', 'bl'),
+           ('addrrdx', 'rdx', 'edx', 'dx', 'dh', 'dl')]
+
+addrregpool = [('addrrsi', 'rsi', 'esi', 'si'),
+               ('addrrdi', 'rdi', 'edi', 'di')]
+
+with open("flag.txt", 'r') as f:
+    ansflag = f.read().strip().encode()
+
+gadgetindex = 0x12dd
+mainindex = 0x56d7
+leaveindex = 0x5254
 
 def leftRotate(n, d, int_bits):
     return ((n << d)|(n >> (int_bits - d))) & (2**int_bits-1)
@@ -15,12 +38,26 @@ def close():
         conn.close()
         server.close()
 
-with open("flag.txt", 'r') as f:
-    ansflag = f.read().strip().encode()
+def gencalcchain(rotfunc, calcfunc, number):
+    senddata = b''
+    resultreg = random.choice(regpool) if enable_reg_randomize else regpool[0]
+    addrreg = random.choice(addrregpool) if enable_reg_randomize else addrregpool[0]
+    if calcfunc != None:
+        calcreg = random.choice(regpool) if enable_reg_randomize else regpool[1]
+        while calcreg[0] == resultreg[0]:
+            calcreg = random.choice(regpool) if enable_reg_randomize else regpool[1]
+        senddata += gadget._pop(addrreg[1], flag + checkindextoflag[a])
+        senddata += gadget._mov(resultreg[5], addrreg[0])
+        senddata += gadget._pop(calcreg[1], number)
+        senddata += calcfunc(resultreg[5], calcreg[5])
+    else:
+        senddata += gadget._pop(resultreg[1], number)
 
-gadgetindex = 0x12ad
-mainindex = 0x52b4
-leaveindex = 0x5224
+    if rotfunc != None:
+        senddata += rotfunc(resultreg[5], rottime)
+    senddata += gadget._pop(addrreg[1], flagcheck + a)
+    senddata += gadget._mov(addrreg[0], resultreg[5])
+    return senddata
 
 if socketmode:
     import socket
@@ -52,9 +89,10 @@ flag = flagcheck + 0x30
 checkdata = recv(48)
 
 pool = list(range(36))
-random.shuffle(pool)
+if enable_calc_randomize:
+    random.shuffle(pool)
 modelist = ["" for a in range(36)]
-usemode = ["add", "sub", "xor", "null"]
+usemode = ["add", "sub", "xor", "null"] if enable_calc_randomize else ["add", "sub", "xor"]
 for a in range(len(pool)):
     modelist[pool[a]] = usemode[int(a % len(usemode))]
 
@@ -67,87 +105,43 @@ for a in range(48):
     else:
         checkindextoflag[a] = -1
 
-random.shuffle(checkindextoflag)
+if enable_flagtocheck_randomize:
+    random.shuffle(checkindextoflag)
 
 for a in range(48):
     if checkindextoflag[a] >= 0:
         flagtocheckindex[checkindextoflag[a]] = a
 
 order = list(range(48))
-random.shuffle(order)
-
-regpool = [('addrrax', 'rax', 'eax', 'ax', 'ah', 'al'),
-           ('addrrbx', 'rbx', 'ebx', 'bx', 'bh', 'bl'),
-           ('addrrdx', 'rdx', 'edx', 'dx', 'dh', 'dl')]
-
-addrregpool = [('addrrsi', 'rsi', 'esi', 'si'),
-               ('addrrdi', 'rdi', 'edi', 'di')]
+if enable_order_randomize:
+    random.shuffle(order)
 
 senddata = b""
 checkindex = 0
 for a in order:
-    rotfunc = random.choice([gadget._ror, gadget._rol])
-    rrotfunc = leftRotate if rotfunc == gadget._ror else rightRotate
-    rottime = random.randint(1, 7)
-    nowcheck = rrotfunc(int(checkdata[a]), rottime, 8)
+    rotfunc = None
+    nowcheck = int(checkdata[a])
+    if enable_rotate:
+        rotfunc = random.choice([gadget._ror, gadget._rol])
+        rrotfunc = leftRotate if rotfunc == gadget._ror else rightRotate
+        rottime = random.randint(1, 7)
+        nowcheck = rrotfunc(nowcheck, rottime, 8)
+
     if checkindextoflag[a] < 0:
-        resultreg = random.choice(regpool)
-        addrreg = random.choice(addrregpool)
-        senddata += gadget._pop(resultreg[1], nowcheck)
-        senddata += rotfunc(resultreg[5], rottime)
-        senddata += gadget._pop(addrreg[1], flagcheck + a)
-        senddata += gadget._mov(addrreg[0], resultreg[5])
+        senddata += gencalcchain(rotfunc, None, nowcheck)
         continue
 
     if modelist[checkindextoflag[a]] not in ["add", "sub", "xor", "null"]:
         modelist[checkindextoflag[a]] = random.choice(["add", "sub", "xor", "null"])
 
     if modelist[checkindextoflag[a]] == "null":
-        resultreg = random.choice(regpool)
-        addrreg = random.choice(addrregpool)
-        senddata += gadget._pop(resultreg[1], nowcheck)
-        senddata += rotfunc(resultreg[5], rottime)
-        senddata += gadget._pop(addrreg[1], flagcheck + a)
-        senddata += gadget._mov(addrreg[0], resultreg[5])
+        senddata += gencalcchain(rotfunc, None, nowcheck)
     elif modelist[checkindextoflag[a]] == "add":
-        resultreg = random.choice(regpool)
-        addrreg = random.choice(addrregpool)
-        calcreg = random.choice(regpool)
-        while calcreg[0] == resultreg[0]:
-            calcreg = random.choice(regpool)
-        senddata += gadget._pop(addrreg[1], flag + checkindextoflag[a])
-        senddata += gadget._mov(resultreg[5], addrreg[0])
-        senddata += gadget._pop(calcreg[1], (nowcheck - int(ansflag[checkindextoflag[a]]) + 0x100) & 0xff)
-        senddata += gadget._add(resultreg[5], calcreg[5])
-        senddata += rotfunc(resultreg[5], rottime)
-        senddata += gadget._pop(addrreg[1], flagcheck + a)
-        senddata += gadget._mov(addrreg[0], resultreg[5])
+        senddata += gencalcchain(rotfunc, gadget._add, (nowcheck - int(ansflag[checkindextoflag[a]]) + 0x100) & 0xff)
     elif modelist[checkindextoflag[a]] == "sub":
-        resultreg = random.choice(regpool)
-        addrreg = random.choice(addrregpool)
-        calcreg = random.choice(regpool)
-        while calcreg[0] == resultreg[0]:
-            calcreg = random.choice(regpool)
-        senddata += gadget._pop(addrreg[1], flag + checkindextoflag[a])
-        senddata += gadget._mov(resultreg[5], addrreg[0])
-        senddata += gadget._pop(calcreg[1], (int(ansflag[checkindextoflag[a]]) - nowcheck + 0x100) & 0xff)
-        senddata += gadget._sub(resultreg[5], calcreg[5])
-        senddata += rotfunc(resultreg[5], rottime)
-        senddata += gadget._pop(addrreg[1], flagcheck + a)
-        senddata += gadget._mov(addrreg[0], resultreg[5])
+        senddata += gencalcchain(rotfunc, gadget._sub, (int(ansflag[checkindextoflag[a]]) - nowcheck + 0x100) & 0xff)
     elif modelist[checkindextoflag[a]] == "xor":
-        resultreg = random.choice(regpool)
-        addrreg = random.choice(addrregpool)
-        calcreg = random.choice(regpool)
-        while calcreg[0] == resultreg[0]:
-            calcreg = random.choice(regpool)
-        senddata += gadget._pop(addrreg[1], flag + checkindextoflag[a])
-        senddata += gadget._mov(resultreg[5], addrreg[0])
-        senddata += gadget._pop(calcreg[1], (int(ansflag[checkindextoflag[a]]) ^ nowcheck) & 0xff)
-        senddata += gadget._xor(resultreg[5], calcreg[5])
-        senddata += rotfunc(resultreg[5], rottime)
-        senddata += gadget._pop(addrreg[1], flagcheck + a)
-        senddata += gadget._mov(addrreg[0], resultreg[5])
+        senddata += gencalcchain(rotfunc, gadget._xor, (int(ansflag[checkindextoflag[a]]) ^ nowcheck) & 0xff)
 
 senddata += gadget.leave()
 
