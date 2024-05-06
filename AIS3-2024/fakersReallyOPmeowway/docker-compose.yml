@@ -2,6 +2,10 @@ version: '3'
 
 services:
   meowwayserver:
+    volumes:
+    - ./server/server.py:/server/server.py:ro
+    - ./server/gadget.py:/server/gadget.py:ro
+    - ./server/flag.txt:/server/flag.txt:ro
     build: ./
     ports:
     - 8741:8741

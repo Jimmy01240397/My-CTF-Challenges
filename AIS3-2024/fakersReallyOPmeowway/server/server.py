@@ -99,8 +99,8 @@ for a in order:
         senddata += gadget._mov(addrreg[0], resultreg[5])
         continue
 
-    if modelist[checkindextoflag[a]] not in ["add", "sub", "not", "xor", "null"]:
-        modelist[checkindextoflag[a]] = random.choice(["add", "sub", "not", "xor", "null"])
+    if modelist[checkindextoflag[a]] not in ["add", "sub", "xor", "null"]:
+        modelist[checkindextoflag[a]] = random.choice(["add", "sub", "xor", "null"])
 
     if modelist[checkindextoflag[a]] == "null":
         resultreg = random.choice(regpool)
@@ -145,15 +145,6 @@ for a in order:
         senddata += gadget._mov(resultreg[5], addrreg[0])
         senddata += gadget._pop(calcreg[1], (int(ansflag[checkindextoflag[a]]) ^ nowcheck) & 0xff)
         senddata += gadget._xor(resultreg[5], calcreg[5])
-        senddata += rotfunc(resultreg[5], rottime)
-        senddata += gadget._pop(addrreg[1], flagcheck + a)
-        senddata += gadget._mov(addrreg[0], resultreg[5])
-    elif modelist[checkindextoflag[a]] == "not":
-        resultreg = random.choice(regpool)
-        addrreg = random.choice(addrregpool)
-        senddata += gadget._pop(addrreg[1], flag + checkindextoflag[a])
-        senddata += gadget._mov(resultreg[5], addrreg[0])
-        senddata += gadget._not(resultreg[5])
         senddata += rotfunc(resultreg[5], rottime)
         senddata += gadget._pop(addrreg[1], flagcheck + a)
         senddata += gadget._mov(addrreg[0], resultreg[5])
