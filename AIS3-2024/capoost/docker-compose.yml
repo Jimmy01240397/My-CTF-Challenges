@@ -14,7 +14,9 @@ services:
       default:
       internal:
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile-easy
     image: capoost-app
     user: app
     environment:
@@ -28,7 +30,8 @@ services:
     - DBPORT=5432
     depends_on:
     - db
-    entrypoint: "bash -c 'sleep 5 && ./aebiaxxSJJpTWnkj'"
+    #entrypoint: "bash -c 'sleep 5 && ./aebiaxxSJJpTWnkj'"
+    entrypoint: "bash -c 'sleep 5 && ./bin/capoost'"
     networks:
       internal:
   db:

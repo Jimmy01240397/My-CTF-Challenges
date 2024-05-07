@@ -1,0 +1,23 @@
+FROM golang:1.19 as builder
+
+LABEL maintainer="Chumy"
+
+RUN apt install make
+
+COPY src /app
+COPY Dockerfile-easy /app/Dockerfile
+WORKDIR /app
+RUN make clean && make && make readflag && \
+    mv bin/readflag /readflag && \
+    mv fl4g1337 /fl4g1337 && \
+    chown root:root /readflag && \
+    chmod 4555 /readflag && \
+    chown root:root /fl4g1337 && \
+    chmod 400 /fl4g1337 && \
+    touch .env && \
+    useradd -m -s /bin/bash app && \
+    chown -R app:app /app
+
+USER app
+
+ENTRYPOINT ["./bin/capoost"]

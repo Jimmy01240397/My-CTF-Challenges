@@ -8,15 +8,20 @@ instrelativedir := $(subst /usr/local,..,$(instdir))
 systemddir := /etc/systemd/system
 config := .env
 systemd := $(exe).service
-tags := release
+#tags := release
 
 all: $(builddir)/$(exe)
 
+run: main.go go.mod go.sum $(importdir)
+		$(builder) run $<
+
 readflag: readflag.go
-		$(builder) build -o $(builddir)/readflag -tags $(tags) $<
+		#$(builder) build -o $(builddir)/readflag -tags $(tags) $<
+		$(builder) build -o $(builddir)/readflag $<
 
 $(builddir)/$(exe): main.go go.mod go.sum $(importdir)
-		$(builder) build -o $(builddir)/$(exe) -tags $(tags) $<
+		#$(builder) build -o $(builddir)/$(exe) -tags $(tags) $<
+		$(builder) build -o $(builddir)/$(exe) $<
 
 install: $(path)/$(exe) $(systemddir)/$(systemd)
 
