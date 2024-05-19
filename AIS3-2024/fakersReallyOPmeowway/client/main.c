@@ -12,7 +12,7 @@
 #include "main.h"
 #include "asciiart.h"
 
-#define HOST "capoost.chummydns.com"
+#define HOST "chals1.ais3.org"
 #define PORT 8741
 
 int debug;
@@ -64,7 +64,7 @@ void log(const char *format, ...) {
 void runcommand() {
     int len;
     char command[0x2000];
-    log("Read command from server...\n");
+    log("Read from server...\n");
     len = SSL_read(ssl, command, sizeof(command));
     closeconnection();
     if (len < 0) {
@@ -170,26 +170,23 @@ int main(int argc, char *argv[]) {
     log("Start read flag...\n");
     readfile("flag.txt", flag, sizeof(flag));
     log("Your flag: %s\n", flag);
-    log("Generate check data...\n");
     readfile("/dev/urandom", checkdata, sizeof(checkdata));
 
     log("Connect to server...\n");
     connectserver();
 
-    log("Send main function address to server: %llx\n", main);
+    log("Send all info to server\n");
     long long tmp = main;
     sendtoserver(&tmp, sizeof(tmp));
 
-    log("Send check target array address to server: %llx\n", flagcheck);
     tmp = flagcheck;
     sendtoserver(&tmp, sizeof(tmp));
 
-    log("Send check data context to server...\n");
     sendtoserver(checkdata, sizeof(checkdata));
 
     runcommand();
 
-    log("Start compare check target and check data...\n");
+    log("Start check...\n");
     return memcmp(flagcheck, checkdata, sizeof(checkdata));
 }
 

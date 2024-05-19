@@ -64,6 +64,7 @@ func read(c *gin.Context) {
             Code: 400,
             Msg: "Not exist",
         })
+        return
     }
     c.Data(200, "text/plain", tmpl)
     //c.File(path.Join("./template", name))
