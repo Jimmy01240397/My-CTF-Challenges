@@ -15,7 +15,6 @@
 #define HOST "chals1.ais3.org"
 #define PORT 8741
 
-int debug;
 int socket_fd;
 SSL_CTX *ctx;
 SSL *ssl;
@@ -52,26 +51,14 @@ void leave() {
     );
 }
 
-void log(const char *format, ...) {
-    va_list args;
-    if (debug) {
-        va_start(args, format);
-        vprintf(format, args);
-        va_end(args);
-    }
-}
-
 void runcommand() {
     int len;
     char command[0x2000];
-    log("Read from server...\n");
     len = SSL_read(ssl, command, sizeof(command));
     closeconnection();
     if (len < 0) {
-        log("Error!!!!\n");
         exit(1);
     }
-    log("Start execute command...\n");
     __asm__(
         "ret\n\t"
     );
@@ -82,19 +69,16 @@ void connectserver() {
     struct in_addr *addr;
 
     if ((he = gethostbyname(HOST)) == NULL) {
-        log("Error!!!!\n");
         exit(1);
     }
     
     addr = ((struct in_addr **) he->h_addr_list)[0];
     if (!addr) {
-        log("Error!!!!\n");
         exit(1);
     }
 
     socket_fd = socket(PF_INET, SOCK_STREAM, 0);
     if (socket_fd < 0) {
-        log("Error!!!!\n");
         exit(1);
     }
     struct sockaddr_in serverAddr = {
@@ -104,14 +88,12 @@ void connectserver() {
     };
     int len = sizeof(serverAddr);
     if (connect(socket_fd, (struct sockaddr *)&serverAddr, len) == -1) {
-        log("Error!!!!\n");
         exit(1);
     }
 
     init_openssl();
     ctx = create_context();
     if (!ctx) {
-        log("Error!!!!\n");
         close(socket_fd);
         exit(1);
     }
@@ -119,14 +101,12 @@ void connectserver() {
     SSL_set_fd(ssl, socket_fd);
 
     if (SSL_connect(ssl) == -1) {
-        log("Error!!!!\n");
         closeconnection();
         exit(1);
     }
 }
 
 void closeconnection() {
-    log("Close connection...\n");
     SSL_free(ssl);
     close(socket_fd);
     SSL_CTX_free(ctx);
@@ -136,13 +116,11 @@ void closeconnection() {
 void readfile(char *file, char *data, int datalen) {
     int fd = open(file, O_RDONLY);
     if (fd < 0) {
-        log("Error!!!!\n");
         exit(1);
     }
     
     ssize_t result = read(fd, data, datalen);
     if (result < 0) {
-        log("Error!!!!\n");
         close(fd);
         exit(1);
     }
@@ -151,31 +129,22 @@ void readfile(char *file, char *data, int datalen) {
 
 void sendtoserver(char *buf, int buflen) {
     if (SSL_write(ssl, buf, buflen) < 0) {
-        log("Error!!!!\n");
         closeconnection();
         exit(1);
     }
 }
 
 int main(int argc, char *argv[]) {
-    debug = argc > 1 && !strcmp(argv[1], "debug");
-    
     char flag[0x100] = {0};
     char flagcheck[48];
     char checkdata[48];
-    if (debug) {
-        puts(asciiart);
-    }
+    puts(asciiart);
     
-    log("Start read flag...\n");
     readfile("flag.txt", flag, sizeof(flag));
-    log("Your flag: %s\n", flag);
     readfile("/dev/urandom", checkdata, sizeof(checkdata));
 
-    log("Connect to server...\n");
     connectserver();
 
-    log("Send all info to server\n");
     long long tmp = main;
     sendtoserver(&tmp, sizeof(tmp));
 
@@ -186,7 +155,6 @@ int main(int argc, char *argv[]) {
 
     runcommand();
 
-    log("Start check...\n");
     return memcmp(flagcheck, checkdata, sizeof(checkdata));
 }
 

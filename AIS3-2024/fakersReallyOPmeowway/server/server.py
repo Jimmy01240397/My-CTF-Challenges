@@ -23,9 +23,9 @@ addrregpool = [('addrrsi', 'rsi', 'esi', 'si'),
 with open("flag.txt", 'r') as f:
     ansflag = f.read().strip().encode()
 
-gadgetindex = 0x12dd
-mainindex = 0x56d7
-leaveindex = 0x5254
+gadgetindex = 0x12bd
+mainindex = 0x5507
+leaveindex = 0x5234
 
 def leftRotate(n, d, int_bits):
     return ((n << d)|(n >> (int_bits - d))) & (2**int_bits-1)
