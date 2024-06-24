@@ -1,4 +1,7 @@
 # Just Shooting Game
+
+![image](https://github.com/Jimmy01240397/My-CTF-Challenges/assets/57281249/0137c941-cfd6-41f6-a329-52e6cfdff2de)
+
 基本上這題最大的難點有兩個：
 1. 取得 magic 值
 2. ~~通靈出~~ Transfer.exec 是某種 bytecode interpreter ，然後把解出來的 code 丟 IDA 之類的解析。
@@ -30,7 +33,7 @@ DnSpy 打開 `ShootingGame_Data\Managed\Assembly-CSharp.dll` 會發現有一些 
 
 ![image](https://github.com/Jimmy01240397/My-CTF-Challenges/assets/57281249/40c38580-272d-409c-bdea-67a283cdbd8c)
 
-解析 `Transfer.exec` 可以發現他的參數變數名稱有 `code`、`mem`、`sp`、`bp` 等等疑似 assembly 的東西，但是因為他太長了要猜一下，直接整個 function 丟給 chatgpt 判斷一下，我是用 GPT4，但是 GPT 3.5 也可以，只是要分段送。
+解析 `Transfer.exec` 可以發現他的參數變數名稱有 `code`、`mem`、`sp`、`bp` 等等疑似 memory、CPU register 的東西，但是因為他太長了要猜一下，直接整個 function 丟給 chatgpt 判斷一下，我是用 GPT4，但是 GPT 3.5 也可以，只是要分段送。
 
 ![image](https://github.com/Jimmy01240397/My-CTF-Challenges/assets/57281249/c0f4cc85-2eb4-4785-858a-00edb41203a2)
 
@@ -64,7 +67,7 @@ DnSpy 打開 `ShootingGame_Data\Managed\Assembly-CSharp.dll` 會發現有一些 
 
 用 python 寫 [unicodetoemoji.py](exploit/unicodetoemoji.py) 跟 [emojitobyte.py](exploit/emojitobyte.py) 把他解成 bytecode 並存成檔案。
 
-接著把解出來的 bytecode 丟 IDA 解看看，我們會拿到這坨。
+接著把解出來的 bytecode 丟 Disassembler 的工具，這邊要猜一下是哪種指令集，這個 [Online-Assembler-and-Disassembler](https://shell-storm.org/online/Online-Assembler-and-Disassembler) 網站不錯用，或者直接 IDA 用 x64 解看看，我們會拿到這坨。
 
 ![image](https://github.com/Jimmy01240397/My-CTF-Challenges/assets/57281249/3f9e5b21-2d7e-416f-8efa-bd5c123e9ce0)
 
