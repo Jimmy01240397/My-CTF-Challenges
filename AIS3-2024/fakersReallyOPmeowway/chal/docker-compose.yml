@@ -8,10 +8,10 @@ services:
     - ./server/flag.txt:/server/flag.txt:ro
     build: ./
     environment:
-    - ENABLE_ROTATE=true
-    - ENABLE_REG_RANDOMIZE=true
-    - ENABLE_CALC_RANDOMIZE=true
-    - ENABLE_FLAGTOCHECK_RANDOMIZE=true
-    - ENABLE_ORDER_RANDOMIZE=true
+    - ENABLE_ROTATE=false
+    - ENABLE_REG_RANDOMIZE=false
+    - ENABLE_CALC_RANDOMIZE=false
+    - ENABLE_FLAGTOCHECK_RANDOMIZE=false
+    - ENABLE_ORDER_RANDOMIZE=false
     ports:
     - 8741:8741
