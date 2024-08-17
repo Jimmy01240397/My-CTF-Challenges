@@ -4,6 +4,6 @@ services:
   chal:
     build: ./
     environment:
-    - FLAG=SCIST{test}
+    - FLAG=SCIST{pL4y1Ng_httP_H3aD3R_1s_fUn_r19hT?}
     ports:
     - 39999:39999
