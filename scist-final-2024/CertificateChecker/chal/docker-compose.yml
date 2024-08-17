@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  chal:
+    build: ./
+    environment:
+    - FLAG=SCIST{test}
+    ports:
+    - 39999:39999

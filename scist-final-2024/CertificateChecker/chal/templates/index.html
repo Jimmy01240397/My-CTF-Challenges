@@ -1,0 +1,29 @@
+{% if valid: %}
+<p>{{ flag }}</p>
+{% else %}
+<form action="/account" method="post">
+    <div class="input">
+        <input type="text" placeholder="username" name="user" required>
+    </div>
+    <div class="input">
+        <input type="password" placeholder="password" name="pass" required>
+    </div>
+    <input type="submit" name="action" value="login">
+    <input type="submit" name="action" value="signup">
+</form>
+<p>{{ userstatus }}</p>
+{% endif %}
+
+<form action="/certvalid" method="post" enctype="multipart/form-data">
+    <div class="input">
+        <label for="trustanchor">trustanchor: </label>
+        <input type="file" id="trustanchor" name="trustanchor">
+    </div>
+    <div class="input">
+        <label for="certificate">certificate: </label>
+        <input type="file" id="certificate" name="certificate" required>
+    </div>
+    <input type="submit" value="Check">
+</form>
+<p>{{ certvalid }}</p>
+

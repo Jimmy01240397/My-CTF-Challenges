@@ -1,0 +1,4 @@
+flask==3.0.3
+python-dotenv==1.0.1
+https://github.com/wbond/oscrypto/archive/d5f3437ed24257895ae1edd9e503cfb352e635a8.zip
+certvalidator==0.11.1
