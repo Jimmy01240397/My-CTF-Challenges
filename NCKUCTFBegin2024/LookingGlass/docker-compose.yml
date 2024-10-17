@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  app:
+    build: ./
+    read_only: true
+    volumes:
+      - ./flag:/flag-8dbb2510222d6fc4:ro
+    ports:
+    - 5000:5000

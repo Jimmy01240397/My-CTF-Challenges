@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>Looking Glass</title>
+</head>
+<body>
+    <h1>Looking Glass</h1>
+    <form action="/" method="post">
+        <label>
+            <input type="radio" name="command" value="0" checked> Ping
+        </label>
+        <label>
+            <input type="radio" name="command" value="1"> Traceroute
+        </label>
+        <label>
+            <input type="radio" name="command" value="2"> Route
+        </label>
+        <br><br>
+        <input type="text" name="target" placeholder="請输入 IP 或域名">
+        <br><br>
+        <input type="submit" value="Submit">
+    </form>
+    <br>
+    <a href='/source'>source</a>
+    <br>
+    <div id="result">
+        {% if error %}
+            <img src="/static/goodhacker.jpg">
+        {% endif %}
+        {% if output %}
+            <pre>{{ output }}</pre>
+        {% endif %}
+    </div>
+</body>
+</html>
