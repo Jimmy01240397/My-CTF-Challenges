@@ -1,5 +1,13 @@
 # My-CTF-Challenge
 
+## NCKUCTFBegin2024
+
+https://ctf2024.nckuctf.org/
+| Name | Category | Solve | Keywords |
+|------------------|----------|-------------|----------|
+| CertificateChecker | Web | 4/154 | `Certificate` |
+| LookingGlass | Web | 20/154 | `Command Injection` |
+
 ## scist-2024-final
 
 https://final.ctf.scist.org
