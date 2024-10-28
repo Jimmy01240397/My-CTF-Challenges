@@ -1,0 +1,86 @@
+_chumynetvrfiproute_:
+  name: IP Route
+  rules:
+  - condition: "::/0"
+    action: "permit"
+    command: 'vtysh -c "show ipv6 route vrf chumynetvrf {target}"'
+  field:
+    description: 'IP Address, Prefix, or Hostname'
+
+_chumynetvrfbgproute_:
+  name: BGP Route
+  rules:
+  - condition: "::/0"
+    action: "permit"
+    command: 'vtysh -c "show bgp vrf chumynetvrf ipv6 unicast {target}"'
+  field:
+    description: 'IP Address, Prefix, or Hostname'
+
+_chumynetvrfbgp_:
+  name: BGP Summary
+  rules:
+  - condition: null
+    command: 'vtysh -c "show bgp vrf chumynetvrf ipv6 unicast summary"'
+  field: null
+
+_chumynetvrfping_:
+  name: Ping
+  rules:
+  - condition: "::/0"
+    action: "permit"
+    command: 'ip vrf exec chumynetvrf ping -6 -c 5 -I {source6} {target}'
+  field:
+    description: 'IP Address, Prefix, or Hostname'
+
+_chumynetvrftraceroute_:
+  name: Traceroute
+  rules:
+  - condition: "::/0"
+    action: "permit"
+    command: 'ip vrf exec chumynetvrf traceroute -6 -w 1 -q 1 -s {source6} {target}'
+  field:
+    description: 'IP Address, Prefix, or Hostname'
+
+
+_iproute_:
+  name: IP Route
+  rules:
+  - condition: "::/0"
+    action: "permit"
+    command: 'vtysh -c "show ipv6 route {target}"'
+  field:
+    description: 'IP Address, Prefix, or Hostname'
+
+_bgproute_:
+  name: BGP Route
+  rules:
+  - condition: "::/0"
+    action: "permit"
+    command: 'vtysh -c "show bgp ipv6 unicast {target}"'
+  field:
+    description: 'IP Address, Prefix, or Hostname'
+
+_bgp_:
+  name: BGP Summary
+  rules:
+  - condition: null
+    command: 'vtysh -c "show bgp ipv6 unicast summary"'
+  field: null
+
+_ping_:
+  name: Ping
+  rules:
+  - condition: "::/0"
+    action: "permit"
+    command: 'ping -6 -c 5 -I {source6} {target}'
+  field:
+    description: 'IP Address, Prefix, or Hostname'
+
+_traceroute_:
+  name: Traceroute
+  rules:
+  - condition: "::/0"
+    action: "permit"
+    command: 'traceroute -6 -w 1 -q 1 -s {source6} {target}'
+  field:
+    description: 'IP Address, Prefix, or Hostname'

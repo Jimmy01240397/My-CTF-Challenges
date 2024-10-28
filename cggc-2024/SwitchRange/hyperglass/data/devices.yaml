@@ -1,0 +1,48 @@
+devices:
+- name: Core Router
+  address: internal-bgprr
+  platform: frr
+  credential:
+    username: root
+    key: /root/.ssh/id_rsa
+  attrs:
+    source6: "2407:9240:3100:e000::"
+  directives:
+  - builtins: false
+  - "_iproute_"
+  - "_bgproute_"
+  - "_bgp_"
+  - "_ping_"
+  - "_traceroute_"
+
+- name: A Site
+  address: internal-ape
+  platform: frr
+  credential:
+    username: root
+    key: /root/.ssh/id_rsa
+  attrs:
+    source6: "2407:9240:3100:e000::1"
+  directives:
+  - builtins: false
+  - "_iproute_"
+  - "_bgproute_"
+  - "_bgp_"
+  - "_ping_"
+  - "_traceroute_"
+
+- name: B Site
+  address: internal-bpe
+  platform: frr
+  credential:
+    username: root
+    key: /root/.ssh/id_rsa
+  attrs:
+    source6: "2407:9240:3100:e000::2"
+  directives:
+  - builtins: false
+  - "_iproute_"
+  - "_bgproute_"
+  - "_bgp_"
+  - "_ping_"
+  - "_traceroute_"

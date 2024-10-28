@@ -1,0 +1,3 @@
+StrictHostKeyChecking no
+UserKnownHostsFile=/dev/null
+ConnectTimeout=1

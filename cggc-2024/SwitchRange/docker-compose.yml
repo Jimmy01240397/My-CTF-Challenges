@@ -1,0 +1,241 @@
+version: "3"
+
+services:
+  hyperglassredis:
+    image: "redis:alpine"
+    networks:
+      99-internal:
+        ipv4_address: 10.10.1.1
+  hyperglass:
+    image: hyperglass
+    depends_on:
+      - hyperglassredis
+    environment:
+      - HYPERGLASS_APP_PATH=/etc/hyperglass
+      - HYPERGLASS_HOST=0.0.0.0
+      - HYPERGLASS_PORT=80
+      - HYPERGLASS_DEBUG=false
+      - HYPERGLASS_DEV_MODE=false
+      - HYPERGLASS_REDIS_HOST=hyperglassredis
+      - HYPEGLASS_DISABLE_UI=false
+      - HYPERGLASS_CONTAINER=true
+    #build: https://github.com/thatmattlove/hyperglass.git
+    build: https://github.com/Jimmy01240397/hyperglass.git
+    ports:
+      - "80:80"
+    volumes:
+      - ./hyperglass/data:/etc/hyperglass
+      - ./hyperglass/ssh:/root/.ssh:ro
+    networks:
+      00-wan:
+      99-internal:
+        ipv4_address: 10.10.1.2
+  bgprr:
+    image: 'frr'
+    cap_add:
+    - NET_RAW
+    - NET_ADMIN
+    - SYS_ADMIN
+    privileged: true
+    build:
+      context: ./frr
+      dockerfile: Dockerfile
+    volumes:
+    - ./bgprr/frr:/etc/frr:ro
+    - ./bgprr/wireguard:/etc/wireguard:ro
+    - ./bgprr:/setup:ro
+    - ./bgprr/ssh:/root/.ssh:ro
+    sysctls:
+    - net.ipv4.ip_forward=1
+    - net.ipv4.tcp_l3mdev_accept=1
+    - net.ipv4.udp_l3mdev_accept=1
+    - net.ipv4.raw_l3mdev_accept=1
+    - net.ipv6.conf.default.forwarding=1
+    - net.ipv6.conf.all.forwarding=1
+    - net.ipv6.conf.all.proxy_ndp=1
+    - net.ipv6.conf.all.accept_ra=2
+    - net.ipv6.conf.all.keep_addr_on_down=1
+    - net.ipv6.conf.all.seg6_enabled=1
+    command: "/bin/bash /setup/start.sh"
+    networks:
+      00-wan:       # eth2
+      10-toape:     # eth0
+        ipv6_address: 2407:9240:3100:e001::2
+      20-tobpe:     # eth1
+        ipv6_address: 2407:9240:3100:e002::2
+      99-internal:  # eth3
+        ipv4_address: 10.10.1.3
+        aliases:
+        - internal-bgprr
+  ape:
+    image: 'frr'
+    cap_add:
+    - NET_RAW
+    - NET_ADMIN
+    - SYS_ADMIN
+    privileged: true
+    build:
+      context: ./frr
+      dockerfile: Dockerfile
+    volumes:
+    - ./ape/frr:/etc/frr:ro
+    - ./ape:/setup:ro
+    - ./ape/ssh:/root/.ssh:ro
+    sysctls:
+    - net.vrf.strict_mode=1
+    - net.ipv4.ip_forward=1
+    - net.ipv4.tcp_l3mdev_accept=1
+    - net.ipv4.udp_l3mdev_accept=1
+    - net.ipv4.raw_l3mdev_accept=1
+    - net.ipv6.conf.default.forwarding=1
+    - net.ipv6.conf.all.forwarding=1
+    - net.ipv6.conf.all.proxy_ndp=1
+    - net.ipv6.conf.all.accept_ra=2
+    - net.ipv6.conf.all.keep_addr_on_down=1
+    - net.ipv6.conf.all.seg6_enabled=1
+    command: "/bin/bash /setup/start.sh"
+    networks:
+      00-wan:       # eth1
+      10-toape:     # eth0
+        ipv6_address: 2407:9240:3100:e001::3
+      30-toace:     # eth2
+        ipv4_address: 10.10.2.1
+      99-internal:  # eth3
+        ipv4_address: 10.10.1.4
+        aliases:
+        - internal-ape
+  bpe:
+    image: 'frr'
+    cap_add:
+    - NET_RAW
+    - NET_ADMIN
+    - SYS_ADMIN
+    privileged: true
+    build:
+      context: ./frr
+      dockerfile: Dockerfile
+    volumes:
+    - ./bpe/frr:/etc/frr:ro
+    - ./bpe:/setup:ro
+    - ./bpe/ssh:/root/.ssh:ro
+    sysctls:
+    - net.vrf.strict_mode=1
+    - net.ipv4.ip_forward=1
+    - net.ipv4.tcp_l3mdev_accept=1
+    - net.ipv4.udp_l3mdev_accept=1
+    - net.ipv4.raw_l3mdev_accept=1
+    - net.ipv6.conf.default.forwarding=1
+    - net.ipv6.conf.all.forwarding=1
+    - net.ipv6.conf.all.proxy_ndp=1
+    - net.ipv6.conf.all.accept_ra=2
+    - net.ipv6.conf.all.keep_addr_on_down=1
+    - net.ipv6.conf.all.seg6_enabled=1
+    command: "/bin/bash /setup/start.sh"
+    networks:
+      00-wan:       # eth1
+      20-tobpe:     # eth0
+        ipv6_address: 2407:9240:3100:e002::3
+      40-tobce:     # eth2
+        ipv4_address: 10.10.3.1
+      99-internal:  # eth3
+        ipv4_address: 10.10.1.5
+        aliases:
+        - internal-bpe
+  ace:
+    image: 'frr'
+    cap_add:
+    - NET_RAW
+    - NET_ADMIN
+    - SYS_ADMIN
+    privileged: false
+    build:
+      context: ./frr
+      dockerfile: Dockerfile
+    volumes:
+    - ./ace/frr:/etc/frr:ro
+    - ./ace:/setup:ro
+    sysctls:
+    - net.ipv4.ip_forward=1
+    command: "/bin/bash /setup/start.sh"
+    networks:
+      30-toace:     # eth0
+        ipv4_address: 10.10.2.2
+      50-toaclient: # eth1
+        ipv4_address: 192.168.100.254
+  bce:
+    image: 'frr'
+    cap_add:
+    - NET_RAW
+    - NET_ADMIN
+    - SYS_ADMIN
+    privileged: false
+    build:
+      context: ./frr
+      dockerfile: Dockerfile
+    volumes:
+    - ./bce/frr:/etc/frr:ro
+    - ./bce:/setup:ro
+    sysctls:
+    - net.ipv4.ip_forward=1
+    command: "/bin/bash /setup/start.sh"
+    networks:
+      40-tobce:     # eth0
+        ipv4_address: 10.10.3.2
+      60-tobclient: # eth1
+        ipv4_address: 192.168.110.254
+
+networks: 
+  00-wan:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 10.10.0.0/24
+        gateway: 10.10.0.254
+  10-toape:
+    driver: bridge
+    enable_ipv6: true
+    ipam:
+      config:
+      - subnet: 10.10.255.0/24
+      - subnet: 2407:9240:3100:e001::/64
+        gateway: 2407:9240:3100:e001::1
+  20-tobpe:
+    driver: bridge
+    enable_ipv6: true
+    ipam:
+      config:
+      - subnet: 10.10.254.0/24
+      - subnet: 2407:9240:3100:e002::/64
+        gateway: 2407:9240:3100:e002::1
+  30-toace:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 10.10.2.0/24
+        gateway: 10.10.2.254
+  40-tobce:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 10.10.3.0/24
+        gateway: 10.10.3.254
+  50-toaclient:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 192.168.100.0/24
+        gateway: 192.168.100.253
+  60-tobclient:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 192.168.110.0/24
+        gateway: 192.168.110.253
+  99-internal:
+    driver: bridge
+    internal: true
+    ipam:
+      config:
+      - subnet: 10.10.1.0/24
+        gateway: 10.10.1.254
+
