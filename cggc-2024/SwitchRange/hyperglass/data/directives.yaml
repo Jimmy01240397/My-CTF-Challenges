@@ -1,11 +1,13 @@
 _chumynetvrfiproute_:
   name: IP Route
   rules:
-  - condition: "::/0"
+  - condition: "^[0-9a-fA-F:.]+$"
     action: "permit"
-    command: 'vtysh -c "show ipv6 route vrf chumynetvrf {target}"'
+    commands:
+    - 'ip -4 route show vrf chumynetvrf | grep "^{target}"'
+    - 'ip -6 route show vrf chumynetvrf | grep "^{target}"'
   field:
-    description: 'IP Address, Prefix, or Hostname'
+    description: '[0-9a-fA-F:.]+ Search string. Ex: 192.168, a000::b000'
 
 _chumynetvrfbgproute_:
   name: BGP Route
@@ -45,11 +47,13 @@ _chumynetvrftraceroute_:
 _iproute_:
   name: IP Route
   rules:
-  - condition: "::/0"
+  - condition: "^[0-9a-fA-F:.]+$"
     action: "permit"
-    command: 'vtysh -c "show ipv6 route {target}"'
+    commands:
+    - 'ip -4 route | grep "^{target}"'
+    - 'ip -6 route | grep "^{target}"'
   field:
-    description: 'IP Address, Prefix, or Hostname'
+    description: '[0-9a-fA-F:.]+ Search string. Ex: 192.168, a000::b000'
 
 _bgproute_:
   name: BGP Route

@@ -1,0 +1,16 @@
+{% if user == None %}
+<form action="/account" method="post">
+    <div class="input">
+        <input type="text" placeholder="username" name="user" required>
+    </div>
+    <div class="input">
+        <input type="password" placeholder="password" name="pass" required>
+    </div>
+    <input type="submit" name="action" value="login">
+</form>
+{% if user.admin %}
+<p>{{ flag }}</p>
+{% else %}
+<p>Login as admin to get flag</p>
+{% endif %}
+

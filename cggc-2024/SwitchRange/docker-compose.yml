@@ -183,6 +183,34 @@ services:
         ipv4_address: 10.10.3.2
       60-tobclient: # eth1
         ipv4_address: 192.168.110.254
+  aclient:
+    image: 'aclient-web'
+    cap_add:
+    - NET_RAW
+    - NET_ADMIN
+    - SYS_ADMIN
+    build:
+      context: ./aclient
+      dockerfile: Dockerfile
+    volumes:
+    - ./aclient/start.sh:/app/start.sh:ro
+    networks:
+      50-toaclient: # eth0
+        ipv4_address: 192.168.100.1
+  bclient:
+    image: 'bclient-db'
+    cap_add:
+    - NET_RAW
+    - NET_ADMIN
+    - SYS_ADMIN
+    build:
+      context: ./bclient
+      dockerfile: Dockerfile
+    volumes:
+    - ./aclient/start.sh:/app/start.sh:ro
+    networks:
+      60-tobclient: # eth0
+        ipv4_address: 192.168.110.1
 
 networks: 
   00-wan:
@@ -193,6 +221,8 @@ networks:
         gateway: 10.10.0.254
   10-toape:
     driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: 9000
     enable_ipv6: true
     ipam:
       config:
@@ -202,6 +232,8 @@ networks:
   20-tobpe:
     driver: bridge
     enable_ipv6: true
+    driver_opts:
+      com.docker.network.driver.mtu: 9000
     ipam:
       config:
       - subnet: 10.10.254.0/24
