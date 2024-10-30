@@ -77,6 +77,8 @@ services:
     build:
       context: ./frr
       dockerfile: Dockerfile
+    environment:
+    - PORT=5000
     volumes:
     - ./ape/frr:/etc/frr:ro
     - ./ape:/setup:ro
@@ -192,6 +194,9 @@ services:
     build:
       context: ./aclient
       dockerfile: Dockerfile
+    environment:
+    - FLAG=CGGC{test}
+    - PORT=5000
     volumes:
     - ./aclient/start.sh:/app/start.sh:ro
     networks:
