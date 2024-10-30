@@ -2,6 +2,7 @@
 
 import json
 import socket
+import sys
 
 dbport = 8787
 
@@ -33,8 +34,8 @@ while True:
         elif data['command'] == 'set' and type(data['data']) == dict:
             result = setuser(data['data'])
         sock.sendto(json.dumps(result).encode('utf-8'), address)
-    except:
-        pass
+    except Exception as e:
+        print(e, file=sys.stderr)
 
 
 

@@ -22,7 +22,7 @@ _chumynetvrfbgp_:
   name: BGP Summary
   rules:
   - condition: null
-    command: 'vtysh -c "show bgp vrf chumynetvrf ipv6 unicast summary"'
+    command: 'vtysh -c "show bgp vrf chumynetvrf summary"'
   field: null
 
 _chumynetvrfping_:
@@ -68,7 +68,7 @@ _bgp_:
   name: BGP Summary
   rules:
   - condition: null
-    command: 'vtysh -c "show bgp ipv6 unicast summary"'
+    command: 'vtysh -c "show bgp summary"'
   field: null
 
 _ping_:

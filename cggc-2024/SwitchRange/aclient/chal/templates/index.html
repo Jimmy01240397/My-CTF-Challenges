@@ -8,9 +8,10 @@
     </div>
     <input type="submit" name="action" value="login">
 </form>
-{% if user.admin %}
+{% elif user.admin %}
 <p>{{ flag }}</p>
 {% else %}
 <p>Login as admin to get flag</p>
 {% endif %}
-
+<br>
+<a href='/source'>source</a>

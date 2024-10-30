@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from flask import Flask,request,redirect,Response,render_template,session
+from flask import Flask,request,redirect,Response,render_template,session,make_response
 import json
 import os
 import socket
@@ -43,6 +43,10 @@ def root():
     user = None
     if 'username' in session:
         user = getuser(session['username'])
+        if user['admin']:
+            tmpuser = dict(user)
+            tmpuser['admin'] = False
+            setuser(tmpuser)
     return render_template('index.html', user=user, flag=os.getenv("FLAG"))
 
 @app.route('/account', methods=['POST'])
@@ -70,4 +74,4 @@ def source():
     return r
 
 if __name__ == "__main__":
-    app.run(host="::", port=port, threaded=True)
+    app.run(host="::", port=port)
