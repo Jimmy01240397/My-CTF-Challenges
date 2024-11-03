@@ -1,5 +1,14 @@
 # My-CTF-Challenge
 
+## CGGC2024
+
+https://cggc.nchc.org.tw/
+| Name | Category | Solve | Keywords |
+|------------------|----------|-------------|----------|
+| Switch Range | Misc | 1/127 | `SRv6` |
+| proxy | Web | 29/127 | `idn` |
+| UnityFlagChecker | Reverse | 12/127 | `il2cpp` `unity` `chacha20` |
+
 ## NCKUCTFBegin2024
 
 https://ctf2024.nckuctf.org/
@@ -29,7 +38,7 @@ https://ais3.org/
 https://ctfd.tscctf.org/
 | Name | Category | Solve | Keywords |
 |------------------|----------|-------------|----------|
-| Just Shooting Game | Misc | 1/165 | `Unity` `.Net` `bytecode interpreter` |
+| Just Shooting Game | Reverse | 1/165 | `Unity` `.Net` `bytecode interpreter` |
 
 
 
