@@ -23,7 +23,7 @@ https://final.ctf.scist.org
 | Name | Category | Solve | Keywords |
 |------------------|----------|-------------|----------|
 | CertificateChecker | Misc | 2/32 | `Certificate` |
-| CertificateChecker-Nerf | Misc | 4/32 | `Web` `Header` |
+| CertificateChecker-Nerf | Web | 4/32 | `Header` |
 
 ## AIS3-preexam-2024
 
@@ -31,7 +31,7 @@ https://ais3.org/
 | Name | Category | Solve | Keywords |
 |------------------|----------|-------------|----------|
 | Capoost | Web | 8/321 | `golang` `ssti` `path traversal` |
-| faker's Really OP meow way | Web | 10/321 | `ROP` `Network` |
+| faker's Really OP meow way | Reverse | 10/321 | `ROP` `Network` |
 
 ## TSCCTF-2024
 
