@@ -1,5 +1,14 @@
 # My-CTF-Challenge
 
+## AIS3-preexam-2025
+
+https://ais3.org/
+| Name | Category | Solve | Keywords |
+|------------------|----------|-------------|----------|
+| 🐱 | Web | 2/389 | `web shell` `apache cgi` `ssti` `cat` |
+| web flag checker | Reverse | 138/389 | `wasm` |
+| tcptunnel | Reverse | 3/389 | `vpn tunneling` |
+
 ## CGGC2024
 
 https://cggc.nchc.org.tw/
