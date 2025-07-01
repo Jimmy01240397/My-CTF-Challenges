@@ -1,0 +1,15 @@
+name: "Tcp Tunnel"
+description: |
+  Some thing at `chals1.ais3.org:29997`
+
+  Author: Chumy
+
+flag: "AIS3{C0nnect_7cpTunnel_4nd_4cc3p7_w3b_serv1c3}"
+author: Chumy
+port: 29997
+tags:
+  - misc
+  - medium
+canonical_name: tcp-tunnel
+compose: ./chal/docker-compose.yml
+distfiles: []

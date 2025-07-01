@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  app:
+    image: webflagchecker
+    build: .
+    ports:
+      - 29998:80

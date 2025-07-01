@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  app:
+    image: cat
+    build: .
+    volumes:
+      - ./flag:/f14g1337:ro
+    ports:
+      - 8000:80
+    networks:
+      default:
+
+networks:
+  default:
+    ipam:
+      config:
+      - subnet: 10.111.0.0/24

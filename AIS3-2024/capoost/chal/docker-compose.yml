@@ -9,7 +9,7 @@ services:
     depends_on:
       - app
     ports:
-      - ${PORT}:80
+      - ${PORT0}:80
     networks:
       default:
       internal:

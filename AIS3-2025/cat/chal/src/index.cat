@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🐱</title>
+</head>
+<body>
+  <form action="/" method="post">
+    <p>I love 🐱. Do you love 🐱?</p>
+    <img src="https://i.imgur.com/4mQy0.jpeg"></img>
+    <p></p>
+    <label for="catInput">🐱 some file: </label>
+    <input type="text" id="catInput" name="cat">
+    <button type="submit">🐱</button>
+  </form>
+  <p></p>
+  {% set os = builtins.__import__("os") %}
+  {% set sys = builtins.__import__("sys") %}
+  {% set parse_qs = builtins.__import__("urllib").parse.parse_qs %}
+  {% if os.environ["REQUEST_METHOD"] == "POST" %}
+    {% set content_length = builtins.int(os.environ.get("CONTENT_LENGTH", 0)) %}
+    {% set data = parse_qs(sys.stdin.read(content_length)) %}
+    {% set catfile = data.get('cat', [''])[0] %}
+    {% set ns = namespace(allow=True) %}
+    {% for a in catfile %}
+        {% if a in [";","&","|","`","$","#","=","!",".","\n","\r"] %}
+            {% set ns.allow = False %}
+        {% endif %}
+    {% endfor %}
+    {% if ns.allow %}
+        {{ os.popen("echo | env -i cat " + catfile).buffer.read().decode('utf8', 'ignore') }}
+    {% else %}
+        <p>Bad hacker bad 🐱</p>
+    {% endif %}
+  {% endif %}
+</body>
+</html>

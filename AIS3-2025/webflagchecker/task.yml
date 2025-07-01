@@ -1,0 +1,17 @@
+name: "web flag checker"
+description: |
+  Just a web flag checker
+
+  http://chals1.ais3.org:29998
+
+  Author: Chumy
+
+flag: "AIS3{W4SM_R3v3rsing_w17h_g0_4pp_39229dd}"
+author: Chumy
+port: 29998
+tags:
+  - rev
+  - medium
+canonical_name: web-flag-checker
+compose: ./chal/docker-compose.yml
+distfiles: []

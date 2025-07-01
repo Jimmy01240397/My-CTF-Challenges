@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+
+import sys
+import os
+import re
+from pathlib import Path
+from jinja2 import Template
+
+sys.stdout.write("Content-type: text/html; charset=utf8\n\n")
+if "PATH_INFO" not in os.environ:
+    exit()
+
+pathinfo = re.sub(r".*/" + os.path.basename(sys.argv[0]), "", os.environ["PATH_INFO"])
+pathinfo = re.sub(r"^/*", "", pathinfo)
+root = os.environ["DOCUMENT_ROOT"]
+
+os.chdir(root)
+
+path = os.path.join(root, pathinfo)
+path = Path(path)
+root = Path(root)
+
+if not path.resolve().is_relative_to(root.resolve()):
+    exit()
+
+with open(path, 'r') as f:
+    data = f.read()
+result = Template(data).render(builtins=__builtins__)
+sys.stdout.write(result)
+
+
+

@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  app:
+    image: tcptunnel
+    build: .
+    cap_add:
+    - NET_RAW
+    - NET_ADMIN
+    - SYS_ADMIN
+    devices:
+    - /dev/net/tun
+    volumes:
+    - ./flag:/usr/share/nginx/html/index.html:ro
+    ports:
+      - 29997:29997
